@@ -176,8 +176,8 @@ def buildOpusOnLinux(bits, force) {
   def present = file("${projectDir}/libs/${bits}/libopus.a").exists()
 
   if (force || !present) {
-    def flags = "-m${bits} -fPIC -O3"
-    def process = ["./configure", "--enable-static", "--with-cpu=" + (bits == 32 ? "x86" : "x64-64"), "--with-pic", "CFLAGS=${flags}", "CXXFLAGS=${flags}", "LDFLAGS=${flags}"].
+    def flags = "-static -m${bits} -fPIC"
+    def process = ["./configure", "CFLAGS=${flags}", "CXXFLAGS=${flags}"].
         execute(null as String[], file("$projectDir/opus/opus-${opusVersion}"))
 
     waitForAndCheckSuccess(process, "Opus ./configure")
@@ -202,7 +202,8 @@ def buildMpg123OnLinux(bits, force) {
     def process = ["patch", "-N", "mpg123-${mpg123Version}/configure", "configure.patch"].execute(null as String[], file("$projectDir/mp3"))
     process.waitForProcessOutput(System.out as Appendable, System.err)
 
-    process = ["./configure", "--enable-static", "--with-cpu=" + (bits == 32 ? "x86" : "x86-64"), "--with-pic", "CFLAGS=-fPIC -O3 -m${bits}", "CXXFLAGS=-fPIC -O3 -m${bits}"].
+    def flags = "-static -m${bits} -fPIC"
+    process = ["./configure", "CFLAGS=${flags}", "CXXFLAGS=${flags}"].
         execute(null as String[], file("$projectDir/mp3/mpg123-${mpg123Version}"))
 
     waitForAndCheckSuccess(process, "Mpg123 ./configure")
@@ -224,7 +225,8 @@ def prepareOggOnLinux(bits, force) {
   def configured = file("$projectDir/vorbis/libogg-${oggVersion}/include/ogg/config_types.h").exists()
 
   if (force || !configured) {
-    def process = ["./configure", "--enable-static", "--build=x86_64-pc-linux-gnu", "--with-pic"].
+    def flags = "-static -m${bits} -fPIC"
+    def process = ["./configure", "CFLAGS=${flags}", "CXXFLAGS=${flags}"].
         execute(null as String[], file("$projectDir/vorbis/libogg-${oggVersion}"))
 
     process.waitForProcessOutput(System.out as Appendable, System.err)
@@ -255,5 +257,6 @@ def buildTaskConfig = [
     name: 'connector'
 ]
 
-createBuildTask(tasks, buildTaskConfig, 32)
-createBuildTask(tasks, buildTaskConfig, 64)
+createBuildTask(tasks, buildTaskConfig, '32')
+createBuildTask(tasks, buildTaskConfig, '64')
+//createBuildTask(tasks, buildTaskConfig, 'arm')
