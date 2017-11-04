@@ -243,5 +243,5 @@ def buildTaskConfig = [
     name: 'connector'
 ]
 
-createBuildTask(tasks, buildTaskConfig, 32)
-createBuildTask(tasks, buildTaskConfig, 64)
+//createBuildTask(tasks, buildTaskConfig, 32)
+//createBuildTask(tasks, buildTaskConfig, 64)
